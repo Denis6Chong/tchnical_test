@@ -9,5 +9,5 @@ https://technicaltest-o3pq.onrender.com/api/docs
 
 # how to run
 ```bash
-docker-compose -d --build
+docker-compose up --build # not woking right now
 ```

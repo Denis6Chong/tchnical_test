@@ -1,40 +1,46 @@
+# Dockerfile.nestjs (Simple NestJS container)
 FROM node:18-bullseye
 
-# Install PostgreSQL
-RUN apt-get update && \
-    apt-get install -y postgresql postgresql-contrib && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /usr/src/app
 
-# Copy dependencies
+# Copy package files
 COPY package*.json ./
+COPY prisma ./prisma/
 
-# Install Node dependencies
+# Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy NestJS project files
+# Copy source code
 COPY . .
 
-COPY .env .env
-
+# Generate Prisma client
 RUN npx prisma generate
-# Build NestJS app
+
+# Build the application
 RUN npm run build
 
-RUN echo "host all all * md5" >> /etc/postgresql/13/main/pg_hba.conf
-# Create a PostgreSQL user & database
-USER postgres
+# Create wait script for database
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "Waiting for postgres..."\n\
+\n\
+until npx prisma db push; do\n\
+  echo "Postgres is unavailable - sleeping"\n\
+  sleep 1\n\
+done\n\
+\n\
+echo "Postgres is up - executing command"\n\
+\n\
+# Run migrations\n\
+npx prisma migrate deploy\n\
+\n\
+# Start the application\n\
+exec "$@"' > /usr/local/bin/wait-for-db.sh
 
-RUN /etc/init.d/postgresql start && \
-    psql --command "CREATE USER nestjs WITH SUPERUSER PASSWORD 'nestjspass';" && \
-    createdb -O nestjs nestjsdb
+RUN chmod +x /usr/local/bin/wait-for-db.sh
 
-USER root
+EXPOSE 3000
 
-# Expose ports (NestJS + PostgreSQL)
-EXPOSE 3000 5432
-
-# Start script: PostgreSQL + NestJS
-CMD service postgresql start && node dist/src/main.js
+ENTRYPOINT ["/usr/local/bin/wait-for-db.sh"]
+CMD ["node", "dist/src/main.js"]

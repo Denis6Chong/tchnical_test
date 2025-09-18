@@ -25,10 +25,6 @@ export class RegisterDto {
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 
-  @ApiProperty({ 
-    example: 'john@example.com',
-    description: 'Valid email address'
-  })
   @IsBoolean()
   isAdmin: boolean;
 }

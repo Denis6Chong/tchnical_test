@@ -19,12 +19,15 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     try {
+      console.log("register service")
       const { name, email, password, isAdmin } = registerDto;
+      console.log("regdto done")
 
       // Check if user already exists
       const existingUser = await this.prisma.user.findUnique({
         where: { email: email.toLowerCase() },
       });
+      console.log("findUnique end")
 
       if (existingUser) {
         throw new ConflictException('User with this email already exists');
@@ -33,6 +36,7 @@ export class AuthService {
       // Hash password
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
+      console.log("hash created")
 
       // Create user
       const user = await this.prisma.user.create({
@@ -43,6 +47,7 @@ export class AuthService {
           isAdmin: isAdmin,
         },
       });
+      console.log("created user");
 
       // Generate JWT token
       const payload = { 
@@ -51,6 +56,7 @@ export class AuthService {
         sub: user.id // Standard JWT claim
       };
       const token = this.jwtService.sign(payload);
+      console.log("token sign");
 
       return {
         message: 'User registered successfully',

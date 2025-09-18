@@ -17,6 +17,8 @@ RUN npm install --legacy-peer-deps
 # Copy NestJS project files
 COPY . .
 
+COPY .env .env
+
 RUN npx prisma generate
 # Build NestJS app
 RUN npm run build

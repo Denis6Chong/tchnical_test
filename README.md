@@ -5,7 +5,7 @@ https://technicaltest-o3pq.onrender.com
 [file to import in postman](<Ecommerce API.postman_collection.json>)
 
 # enpoints
-https://technicaltest-o3pq.onrender.com/api/doc
+https://technicaltest-o3pq.onrender.com/api/docs
 
 # how to run
 ```bash

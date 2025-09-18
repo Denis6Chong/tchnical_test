@@ -1,4 +1,4 @@
-# Dockerfile.nestjs (Simple NestJS container)
+# Dockerfile.nestjs - Clean version without scripts
 FROM node:18-bullseye
 
 WORKDIR /usr/src/app
@@ -8,39 +8,17 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
-
-# Build the application
+RUN npx prisma migrate dev --name init --force
+# Build application
 RUN npm run build
 
-# Create wait script for database
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-echo "Waiting for postgres..."\n\
-\n\
-until npx prisma db push; do\n\
-  echo "Postgres is unavailable - sleeping"\n\
-  sleep 1\n\
-done\n\
-\n\
-echo "Postgres is up - executing command"\n\
-\n\
-# Run migrations\n\
-npx prisma migrate deploy\n\
-\n\
-# Start the application\n\
-exec "$@"' > /usr/local/bin/wait-for-db.sh
+EXPOSE $PORT
 
-RUN chmod +x /usr/local/bin/wait-for-db.sh
-
-EXPOSE 3000
-
-ENTRYPOINT ["/usr/local/bin/wait-for-db.sh"]
 CMD ["node", "dist/src/main.js"]

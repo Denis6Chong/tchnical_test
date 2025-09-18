@@ -22,7 +22,6 @@ export class LoginDto {
     description: 'User email address'
   })
   @IsBoolean()
-  @IsNotEmpty()
   isAdmin: boolean;
 
 }

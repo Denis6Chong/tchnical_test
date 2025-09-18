@@ -15,11 +15,11 @@ COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
-RUN npx prisma migrate reset --force
-RUN npx prisma migrate dev --name init
+RUN chmod +x start.sh
+
 # Build application
 RUN npm run build
 
 EXPOSE $PORT
 
-CMD ["node", "dist/src/main.js"]
+CMD ["start.sh"]

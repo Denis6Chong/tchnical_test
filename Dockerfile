@@ -23,8 +23,10 @@ RUN npx prisma generate
 # Build NestJS app
 RUN npm run build
 
+RUN echo "host all all * md5" >> /etc/postgresql/13/main/pg_hba.conf
 # Create a PostgreSQL user & database
 USER postgres
+
 RUN /etc/init.d/postgresql start && \
     psql --command "CREATE USER nestjs WITH SUPERUSER PASSWORD 'nestjspass';" && \
     createdb -O nestjs nestjsdb

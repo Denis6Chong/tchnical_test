@@ -8,4 +8,6 @@ https://technicaltest-o3pq.onrender.com
 https://technicaltest-o3pq.onrender.com/api/doc
 
 # how to run
+```bash
 docker-compose -d --build
+```

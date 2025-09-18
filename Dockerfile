@@ -17,9 +17,6 @@ COPY . .
 RUN npx prisma generate
 RUN chmod +x start.sh
 
-# Build application
-RUN npm run build
-
 EXPOSE $PORT
 
 CMD ["start.sh"]

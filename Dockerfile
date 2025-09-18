@@ -33,4 +33,4 @@ USER root
 EXPOSE 3000 5432
 
 # Start script: PostgreSQL + NestJS
-CMD service postgresql start && node dist/main.js
+CMD service postgresql start && node dist/src/main.js
